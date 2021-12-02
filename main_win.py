@@ -129,3 +129,7 @@ for i in range(1):
         #print(f' [Info] Saving...')
         driver.find_element_by_id('bsiSave').click()
         print(f'\n[+] Saved changes of {barcode}!')
+
+print('Finished!')
+
+input()
