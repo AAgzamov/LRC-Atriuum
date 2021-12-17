@@ -49,9 +49,31 @@ def call_number():
         
         What to do with the Call Number?
         [0] Clean.
-        [1] 'Fiction' and 'First 3 letters of the author's surname'.
+        [1] "Fiction" and "First 3 letters of the author's surname".
 
             ''')
+
+def physical_location():
+    while 1:
+        back = False
+        print('''
+        
+        Indicate Physical Location.
+
+        [0] At Circulation Desk.        [6] Final Projects.     [12] Silent Area.
+        [1] Cass Main Area.             [7] Internet.           [13] Strategy Room.
+        [2] CD Main Area.               [8] Journals.           [14] Undefined Items.
+        [3] Discussion Area.            [9] LRC Archive.        [15] Urgench-Samarkand.
+        [4] Dormitory 1.                [10] Lyceum Library.    [16] WIUT_Lyceum Library.
+        [5] Dormitory 2.                [11] Main Lybrary.      [17] Work Group Area (Cherdak).
+
+    ''')
+        user = input('--> ')
+        if user not in range(0, 10):
+            print('[-] Invalid option!')
+            continue
+        elif user in range(0, 10):
+            return user
 
 def edit_options():
     while 1:
@@ -77,7 +99,7 @@ def edit_options():
             if back:
                 continue
         elif user == '1':
-            return '1'
+            return user, False
         else:
             print('[-] Invalid option!')
 
@@ -90,7 +112,11 @@ def edit_values():
         call_prefix_value = input('--> ')
         call_number()
         call_number_value = input('--> ')
+        location_value = physical_location()
 
+
+        
+        return circulation_value, report_value, call_prefix_value, call_number_value, location_value
 
 
 
@@ -117,25 +143,31 @@ class Atriuum():
                     button = driver.find_element_by_id('loginButtonID')
                     button.click()
                     time.sleep(1)
-                    if not driver.find_element_by_class('error error-block'):
+                    try:
+                        if driver.find_element_by_class_name('error error-block'):
+                            success = False
+                    except:
                         success = True
-                    else:
-                        success = False
                 except:
                     print('[-] Invalid username or password!')
-                    credentials()
+                    username, password = credentials()
                     success = False
                 if success:
+                    print('[i] Logged in successfully.')
                     break
                 
         elif self.mode == 's':
             pass
 
-        def edit_barcodes(self, edit):
+        def edit_barcodes(self, edit, *args):
             if self.edit == '0':
-              pass  
-
+                data = pd.read_excel(*args)
+                pass
+                
             elif self.edit == '1':
+                barcode = input('[+] Enter the barcode: ')
+
+                print('[i] Barcode: {}'.format(barcode))
                 pass
 
             
@@ -144,6 +176,7 @@ intro()
 mode = mode()
 username, password = credentials()
 
+
 # LOGIN SCRIPT.
 website = Atriuum(username, password, mode)
 website.open()
@@ -151,6 +184,10 @@ website.open()
 
 # EDIT OPTION SCRIPT.
 edit, path = edit_options()
+if edit == '0':
+    website.edit_barcodes(edit, path)
+elif edit == '1':
+    website.edit_barcodes(edit)
 
 
 # SCRIPT FOR CHANGING BOOK INFROMATION.
