@@ -1,9 +1,14 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
-import pandas as pd
-import time
-import os
+try:
+    from selenium import webdriver
+    from selenium.webdriver.support.ui import Select
+    from selenium.webdriver.common.keys import Keys
+    import pandas as pd
+    import time
+    import os
+except:
+    print('[-] Cannot import libraries!')
+    print('[i] Execution is impossible.')
+    input()
 
 def intro():
     print('''
@@ -36,22 +41,57 @@ def credentials():
     password = str(input('[+] Enter the password: '))
     return username, password
 
+def circulation_class():
+    pass
+
+def report_class():
+    pass
+
 def call_prefix():
-    print('''
+    while 1:
+        back = False
+        print('''
         
         What to do with Call Number Prefix?
         [0] Clean.
 
             ''')
 
+        user = input('--> ')
+        if user == '0':
+            return user
+        elif user != '0':
+            print('[-] Invalid option!')
+            continue
+
+
 def call_number():
-    print('''
+    while 1:
+        back = False
+        print('''
         
         What to do with the Call Number?
         [0] Clean.
         [1] "Fiction" and "First 3 letters of the author's surname".
+        [2] Other.
 
             ''')
+
+        user = input('--> ')
+        if user == '0':
+            return user
+        elif user == '1':
+            pass
+        elif user == '2':
+            while 1:
+                user = input('Set Call Number: ')
+                if user == 'back()':
+                    break
+                else:
+                    return user
+        else:
+            print('[-] Invalid option!')
+            continue
 
 def physical_location():
     while 1:
@@ -65,15 +105,39 @@ def physical_location():
         [2] CD Main Area.               [8] Journals.           [14] Undefined Items.
         [3] Discussion Area.            [9] LRC Archive.        [15] Urgench-Samarkand.
         [4] Dormitory 1.                [10] Lyceum Library.    [16] WIUT_Lyceum Library.
-        [5] Dormitory 2.                [11] Main Lybrary.      [17] Work Group Area (Cherdak).
+        [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).
 
     ''')
         user = input('--> ')
-        if user not in range(0, 10):
+        if user == '0':
+            return 'At Circulation Desk'
+        elif user == '1':
+            return 'Cass Main Area'
+        elif user == '2':
+            return 'CD Main Area'
+        elif user == '3':
+            return 'Discussion Area'
+        elif user == '4':
+            return 'Dormitory 1'
+        elif user == '5':
+            return 'Dormitory 2'
+        elif user == '6':
+            return 'Final Projects'
+        elif user == '7':
+            return 'Internet'
+        elif user == '8':
+            return 'Journals'
+        elif user == '9':
+            return 'LRC Archive'
+        elif user == '10':
+            return 'Lyceum Library'
+        elif user == '11':
+            return 'Main Library'
+        elif user == '12':
+            return 'Silent Area'
+        else:
             print('[-] Invalid option!')
             continue
-        elif user in range(0, 10):
-            return user
 
 def edit_options():
     while 1:
@@ -104,19 +168,13 @@ def edit_options():
             print('[-] Invalid option!')
 
 def edit_values():
-    while 1:
-        print('Enter the values for the following variables.\n')
-        circulation_value = input('Circulation Class: ')
-        report_value = input('Report Class: ')
-        call_prefix()
-        call_prefix_value = input('--> ')
-        call_number()
-        call_number_value = input('--> ')
-        location_value = physical_location()
-
-
-        
-        return circulation_value, report_value, call_prefix_value, call_number_value, location_value
+    print('Set the values for the following variables.\n')
+    circulation_value = input('Circulation Class: ')
+    report_value = input('Report Class: ')
+    call_prefix_value = call_prefix()
+    call_number_value = call_number()
+    physical_location_value = physical_location()    
+    return circulation_value, report_value, call_prefix_value, call_number_value, physical_location_value
 
 
 
@@ -126,7 +184,7 @@ class Atriuum():
         self.password = password
         self.mode = mode
 
-    def open(self):
+    def open(self, username, password):
         if self.mode == 'a':
             print('[i] Opening Atriuum Website...')
             driver = webdriver.Firefox()
@@ -138,8 +196,8 @@ class Atriuum():
                 try:
                     time.sleep(1)
                     print('[i] Entering username and password...')
-                    driver.find_element_by_id('login_username').send_keys(username)
-                    driver.find_element_by_id('password').send_keys(password)
+                    driver.find_element_by_id('login_username').send_keys(self.username)
+                    driver.find_element_by_id('password').send_keys(self.password)
                     button = driver.find_element_by_id('loginButtonID')
                     button.click()
                     time.sleep(1)
@@ -150,7 +208,7 @@ class Atriuum():
                         success = True
                 except:
                     print('[-] Invalid username or password!')
-                    username, password = credentials()
+                    self.username, self.password = credentials()
                     success = False
                 if success:
                     print('[i] Logged in successfully.')
@@ -159,16 +217,28 @@ class Atriuum():
         elif self.mode == 's':
             pass
 
-        def edit_barcodes(self, edit, *args):
-            if self.edit == '0':
-                data = pd.read_excel(*args)
-                pass
-                
-            elif self.edit == '1':
-                barcode = input('[+] Enter the barcode: ')
+    def edit_barcodes(self, edit, *args, path=None):
+        if self.edit == '0':
+            data = pd.read_excel(self.path)
+            pass
+    
+        elif self.edit == '1':
+            barcode = input('[+] Enter the barcodes: ')
+            for i in barcode:
+                if i == ', ':
+                    barcode = barcode.split(', ')
+                    for b in barcode:
+                        print('[i] Barcode: {}'.format(b))
+                        driver.find_element_by_id('GlobalKeywordSearchField').send_keys(b)
+                        driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                        time.sleep(1)
+                        for num in range(1, 11):
+                            try:
+                                driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                            except:
+                                break
 
-                print('[i] Barcode: {}'.format(barcode))
-                pass
+
 
             
 
@@ -179,15 +249,16 @@ username, password = credentials()
 
 # LOGIN SCRIPT.
 website = Atriuum(username, password, mode)
-website.open()
+website.open(username, password)
 
 
-# EDIT OPTION SCRIPT.
+# EDIT SCRIPT.
 edit, path = edit_options()
+circulation, report, call_prefix, call_number, physical_location = edit_values()
 if edit == '0':
-    website.edit_barcodes(edit, path)
+    website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location, path=path)
 elif edit == '1':
-    website.edit_barcodes(edit)
+    website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location)
 
 
 # SCRIPT FOR CHANGING BOOK INFROMATION.
