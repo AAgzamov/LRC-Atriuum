@@ -257,9 +257,11 @@ class Atriuum():
             pass
     
         elif self.edit == '1':
-            barcode = input('[+] Enter the barcodes: ')
+            many_barcodes = False
+            barcode = str(input('[+] Enter the barcodes: '))
             for i in barcode:
                 if i == ',':
+                    many_barcodes = True
                     barcode = barcode.split(', ')
                     for b in barcode:
                         print('[i] Barcode: {}'.format(b))
@@ -300,44 +302,44 @@ class Atriuum():
 
                             except:
                                 break
-                else:
-                    print('[i] Barcode: {}'.format(barcode))
-                    driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
-                    driver.find_element_by_id('GlobalKeywordSearchButton').click()
-                    time.sleep(1)
-                    for num in range(1, 11):
-                        try:
-                            driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
-                            # Circulation Class.
-                            Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+            if !many_barcodes:
+                print('[i] Barcode: {}'.format(barcode))
+                driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
+                driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                time.sleep(1)
+                for num in range(1, 11):
+                    try:
+                        driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                        # Circulation Class.
+                        Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
                                 
-                            # Report Class.
-                            Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                        # Report Class.
+                        Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
                                 
-                            # Call Number Prefix.
-                            if self.arg[2] == '0':
-                                driver.find_element_by_id('CallNumberPrefix').clear()
+                        # Call Number Prefix.
+                        if self.arg[2] == '0':
+                            driver.find_element_by_id('CallNumberPrefix').clear()
 
-                            # Call Number.
-                            if self.arg[3] == '0':
-                                driver.find_element_by_id('CallNumberMiddle').clear()
-                            elif self.arg[3] == '1':
-                                pass
-                            else:
-                                temp = arg[3]
-                                temp = temp.split(' ')
-                                driver.find_element_by_id('CallNumberMiddle').clear()
-                                driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                        # Call Number.
+                        if self.arg[3] == '0':
+                            driver.find_element_by_id('CallNumberMiddle').clear()
+                        elif self.arg[3] == '1':
+                            pass
+                        else:
+                            temp = arg[3]
+                            temp = temp.split(' ')
+                            driver.find_element_by_id('CallNumberMiddle').clear()
+                            driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
                                 
-                            # Physical Location.
-                            Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                        # Physical Location.
+                        Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
                                 
-                            # Save Changes.
-                            driver.find_element_by_id('bsiSave').click()
-                            print('[i] Saved changes.')
-                            time.sleep(2)
-                        except:
-                            break
+                        # Save Changes.
+                        driver.find_element_by_id('bsiSave').click()
+                        print('[i] Saved changes.')
+                        time.sleep(2)
+                    except:
+                        break
 
 
 
