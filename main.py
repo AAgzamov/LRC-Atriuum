@@ -5,6 +5,7 @@ try:
     import pandas as pd
     import time
     import os
+    import getpass
 except:
     print('[-] Cannot import libraries!')
     print('[i] Execution is impossible.')
@@ -26,6 +27,26 @@ def intro():
 
             ''')
 
+def license():
+    print('Program repository available at https://www.github.com/AAgzamov/LRC-Atriuum')
+    print('For license refer to https://www.github.com/AAgzamov/LRC-Atriuum/LICENSE.md')
+
+
+def menu():
+    while 1:
+        print('''
+        
+        [0] Start.
+        [1] License.
+
+                ''')
+        user = input('--> ')
+        if user == '0':
+            return user
+        elif user == '1':
+            license()
+            input()
+
 def mode():
     while 1:
         user = str(input('Choose active or silent mode (a/s): '))
@@ -37,8 +58,8 @@ def mode():
             print('[-] Invalid option!')
 
 def credentials():
-    username = str(input('[+] Enter the username: '))
-    password = str(input('[+] Enter the password: '))
+    username = str(input('[+] Username: '))
+    password = str(getpass.getpass('[+] Password: '))
     return username, password
 
 def circulation_class():
@@ -57,7 +78,7 @@ def call_prefix():
 
             ''')
 
-        user = input('--> ')
+        user = str(input('--> '))
         if user == '0':
             return user
         elif user != '0':
@@ -77,7 +98,7 @@ def call_number():
 
             ''')
 
-        user = input('--> ')
+        user = str(input('--> '))
         if user == '0':
             return user
         elif user == '1':
@@ -108,7 +129,7 @@ def physical_location():
         [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).
 
     ''')
-        user = input('--> ')
+        user = str(input('--> '))
         if user == '0':
             return 'At Circulation Desk'
         elif user == '1':
@@ -135,6 +156,16 @@ def physical_location():
             return 'Main Library'
         elif user == '12':
             return 'Silent Area'
+        elif user == '13':
+            return 'Strategy Room'
+        elif user == '14':
+            return 'Undefined Items'
+        elif user == '15':
+            return 'Urgench-Samarkand'
+        elif user == '16':
+            return 'WIUT_Lyceum Library'
+        elif user == '17':
+            return 'Work Group Area (Cherdak)'
         else:
             print('[-] Invalid option!')
             continue
@@ -149,7 +180,7 @@ def edit_options():
         [1] Single Barcode Input.
 
         ''')
-        user = input('--> ')
+        user = str(input('--> '))
         if user == '0':
             while 1:
                 excel_path = input('Enter the path to an excel file: ')
@@ -218,6 +249,9 @@ class Atriuum():
             pass
 
     def edit_barcodes(self, edit, *args, path=None):
+        self.edit = edit
+        self.args = args
+        self.path = path
         if self.edit == '0':
             data = pd.read_excel(self.path)
             pass
@@ -225,7 +259,7 @@ class Atriuum():
         elif self.edit == '1':
             barcode = input('[+] Enter the barcodes: ')
             for i in barcode:
-                if i == ', ':
+                if i == ',':
                     barcode = barcode.split(', ')
                     for b in barcode:
                         print('[i] Barcode: {}'.format(b))
@@ -235,30 +269,96 @@ class Atriuum():
                         for num in range(1, 11):
                             try:
                                 driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                                # Circulation Class.
+                                Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+                                
+                                # Report Class.
+                                Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                                
+                                # Call Number Prefix.
+                                if self.arg[2] == '0':
+                                    driver.find_element_by_id('CallNumberPrefix').clear()
+
+                                # Call Number.
+                                if self.arg[3] == '0':
+                                    driver.find_element_by_id('CallNumberMiddle').clear()
+                                elif self.arg[3] == '1':
+                                    pass
+                                else:
+                                    temp = arg[3]
+                                    temp = temp.split(' ')
+                                    driver.find_element_by_id('CallNumberMiddle').clear()
+                                    driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                
+                                # Physical Location.
+                                Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                                
+                                # Save Changes.
+                                driver.find_element_by_id('bsiSave').click()
+                                print('[i] Saved changes.')
+                                time.sleep(2)
+
                             except:
                                 break
+                else:
+                    print('[i] Barcode: {}'.format(barcode))
+                    driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
+                    driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                    time.sleep(1)
+                    for num in range(1, 11):
+                        try:
+                            driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                            # Circulation Class.
+                            Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+                                
+                            # Report Class.
+                            Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                                
+                            # Call Number Prefix.
+                            if self.arg[2] == '0':
+                                driver.find_element_by_id('CallNumberPrefix').clear()
+
+                            # Call Number.
+                            if self.arg[3] == '0':
+                                driver.find_element_by_id('CallNumberMiddle').clear()
+                            elif self.arg[3] == '1':
+                                pass
+                            else:
+                                temp = arg[3]
+                                temp = temp.split(' ')
+                                driver.find_element_by_id('CallNumberMiddle').clear()
+                                driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                
+                            # Physical Location.
+                            Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                                
+                            # Save Changes.
+                            driver.find_element_by_id('bsiSave').click()
+                            print('[i] Saved changes.')
+                            time.sleep(2)
+                        except:
+                            break
 
 
 
-            
-
+# MENU SCRIPT.
 intro()
-mode = mode()
-username, password = credentials()
+user = menu()
+if user == '0':
+    mode = mode()
+    username, password = credentials()
 
+    # LOGIN SCRIPT.
+    website = Atriuum(username, password, mode)
+    website.open(username, password)
 
-# LOGIN SCRIPT.
-website = Atriuum(username, password, mode)
-website.open(username, password)
-
-
-# EDIT SCRIPT.
-edit, path = edit_options()
-circulation, report, call_prefix, call_number, physical_location = edit_values()
-if edit == '0':
-    website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location, path=path)
-elif edit == '1':
-    website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location)
+    # EDIT SCRIPT.
+    edit, path = edit_options()
+    circulation, report, call_prefix, call_number, physical_location = edit_values()
+    if edit == '0':
+        website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location, path=path)
+    elif edit == '1':
+        website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location)
 
 
 # SCRIPT FOR CHANGING BOOK INFROMATION.
