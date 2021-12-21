@@ -46,10 +46,12 @@ def menu():
         elif user == '1':
             license()
             input()
+        else:
+            print('[-] Invalid option!')
 
 def mode():
     while 1:
-        user = str(input('Choose active or silent mode (a/s): '))
+        user = str(input('\nChoose active or silent mode (a/s): '))
         if user == 'a':
             return 'a'
         elif user == 's':
@@ -58,15 +60,102 @@ def mode():
             print('[-] Invalid option!')
 
 def credentials():
-    username = str(input('[+] Username: '))
+    username = str(input('\n[+] Username: '))
     password = str(getpass.getpass('[+] Password: '))
     return username, password
 
 def circulation_class():
-    pass
+    while 1:
+        back = False
+        print('''
+            
+            Item Circulation Class.
 
+            [0] 1-Day Loan.         [4] AV Circ.
+            [1] 3-Day Loan.         [5] Circulation.
+            [2] 7-Day Loan.         [6] Online.
+            [3] 30-Day Loan.        [7] Reference.
+
+                ''')
+        user = str(input('-->'))
+        if user == '0':
+            return '1-Day Loan'
+        elif user == '1':
+            return '3-Day Loan'
+        elif user == '2':
+            return '7-Day Loan'
+        elif user == '3':
+            return '30-Day Loan'
+        elif user == '4':
+            return 'AV Circ'
+        elif user == '5':
+            return 'Circulation'
+        elif user == '6':
+            return 'Online'
+        elif user == '7':
+            return 'Reference'
+        else:
+            print('[-] Invalid option!')
+        
 def report_class():
-    pass
+    while 1:
+        back = False
+        print('''
+            
+            Item Report Class.
+
+            [0] 000-099.        [6] 600-699.            [12] CD.                    [18] Undefined.
+            [1] 100-199.        [7] 700-799.            [13] Easy Book.             [19] Videocassettes.
+            [2] 200-299.        [8] 800-899.            [14] eBook.
+            [3] 300-399.        [9] 900-999.            [15] Fiction.
+            [4] 400-499.        [10] Audiocassettes.    [16] Journal/Newspaper.
+            [5] 500-599.        [11] Biography.         [17] Large Print.
+
+
+                ''')
+        user = str(input('-->'))
+        if user == '0':
+            return '000-099'
+        elif user == '1':
+            return '100-199'
+        elif user == '2':
+            return '200-299'
+        elif user == '3':
+            return '300-399'
+        elif user == '4':
+            return '400-499'
+        elif user == '5':
+            return '500-599'
+        elif user == '6':
+            return '600-699'
+        elif user == '7':
+            return '700-799'
+        elif user == '8':
+            return '800-899'
+        elif user == '9':
+            return '900-999'
+        elif user == '10':
+            return 'Audiocassettes'
+        elif user == '11':
+            return 'Biography'
+        elif user == '12':
+            return 'CD'
+        elif user == '13':
+            return 'Easy Books'
+        elif user == '14':
+            return 'eBooks'
+        elif user == '15':
+            return Fiction
+        elif user == '16':
+            return 'Journal/Newspaper'
+        elif user == '17':
+            return 'Large Print'
+        elif user == '18':
+            return 'Undefined'
+        elif user == '19':
+            return 'Videocassettes'
+        else:
+            print('[-] Invalid option!')
 
 def call_prefix():
     while 1:
@@ -194,14 +283,14 @@ def edit_options():
             if back:
                 continue
         elif user == '1':
-            return user, False
+            return user, None
         else:
             print('[-] Invalid option!')
 
 def edit_values():
     print('Set the values for the following variables.\n')
-    circulation_value = input('Circulation Class: ')
-    report_value = input('Report Class: ')
+    circulation_value = circulation_class()
+    report_value = report_class()
     call_prefix_value = call_prefix()
     call_number_value = call_number()
     physical_location_value = physical_location()    
@@ -218,11 +307,11 @@ class Atriuum():
     def open(self, username, password):
         if self.mode == 'a':
             print('[i] Opening Atriuum Website...')
+            global driver
             driver = webdriver.Firefox()
             driver.get('https://wiutuz.booksys.net')
             time.sleep(1)
-            button = driver.find_element_by_id('librarylogonlink0')
-            button.click()
+            driver.find_element_by_id('librarylogonlink0').click()
             while 1:
                 try:
                     time.sleep(1)
@@ -302,7 +391,7 @@ class Atriuum():
 
                             except:
                                 break
-            if !many_barcodes:
+            if not many_barcodes:
                 print('[i] Barcode: {}'.format(barcode))
                 driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
                 driver.find_element_by_id('GlobalKeywordSearchButton').click()
@@ -341,6 +430,9 @@ class Atriuum():
                     except:
                         break
 
+    def close():
+        pass
+
 
 
 # MENU SCRIPT.
@@ -361,7 +453,6 @@ if user == '0':
         website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location, path=path)
     elif edit == '1':
         website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location)
-
 
 # SCRIPT FOR CHANGING BOOK INFROMATION.
 for i in range(1):
