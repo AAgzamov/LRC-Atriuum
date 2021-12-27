@@ -321,6 +321,7 @@ class Atriuum():
         self.mode = mode
 
     def open(self, username, password, logs):
+        self.logs = logs
         if self.mode == 'a':
             print('[i] Opening Atriuum Website...')
             global driver
