@@ -6,6 +6,9 @@ try:
     import time
     import os
     import getpass
+    import magic
+    import datetime
+    import pytz
 except:
     print('[-] Cannot import libraries!')
     print('[i] Execution is impossible.')
@@ -56,6 +59,14 @@ def mode():
             return 'a'
         elif user == 's':
             return 's'
+        else:
+            print('[-] Invalid option!')
+
+def logging():
+    while 1:
+        user = str(input('\nSave logs (y/n)? '))
+        if user == 'y' or user == 'n':
+            return user
         else:
             print('[-] Invalid option!')
 
@@ -276,10 +287,15 @@ def edit_options():
                 if excel_path == 'back()':
                     back = True
                     break
-                if os.access(excel_path, os.F_OK):
-                    return user, excel_path
-                else:
-                    print('[-] Invalid path or file does not exist!')
+                #if os.access(excel_path, os.F_OK):
+                #    return user, excel_path
+                try:
+                    if magic.from_file(excel_path, mime=True) == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                        return user, excel_path
+                    else:
+                        print('[-] Invalid path or wrong file type!')
+                except:
+                    print('[-] Invalid path or wrong file type!')
             if back:
                 continue
         elif user == '1':
@@ -304,7 +320,7 @@ class Atriuum():
         self.password = password
         self.mode = mode
 
-    def open(self, username, password):
+    def open(self, username, password, logs):
         if self.mode == 'a':
             print('[i] Opening Atriuum Website...')
             global driver
@@ -318,8 +334,7 @@ class Atriuum():
                     print('[i] Entering username and password...')
                     driver.find_element_by_id('login_username').send_keys(self.username)
                     driver.find_element_by_id('password').send_keys(self.password)
-                    button = driver.find_element_by_id('loginButtonID')
-                    button.click()
+                    driver.find_element_by_id('loginButtonID').click()
                     time.sleep(1)
                     try:
                         if driver.find_element_by_class_name('error error-block'):
@@ -332,18 +347,116 @@ class Atriuum():
                     success = False
                 if success:
                     print('[i] Logged in successfully.')
+                    if self.logs == 'y':
+                        with open('logs.txt', 'a') as file:
+                            file.write('"{}" logged in on {}'.format(self.username, datetime.datetime.now().astimezone(pytz.timezone('Asia/Tashkent')).strftime('%B %d, %Y at %H:%M:%S')))
+                            file.write('\n')
                     break
                 
         elif self.mode == 's':
-            pass
+            options = webdriver.FirefoxOptions()
+            options.headless = True
+            driver = webdriver.Firefox(options=options)
+            print('[i] Silent mode is ON.')
+            print('[i] Wait...')
+            driver.get('https://wiutuz.booksys.net')
+            time.sleep(1)
+            driver.find_element_by_id('librarylogonlink0').click()
+            while 1:
+                try:
+                    time.sleep(1)
+                    print('[i] Entering the username and password...')
+                    driver.find_element_by_id('login_username').send_keys(self.username)
+                    driver.find_element_by_id('password').send_keys(self.password)
+                    driver.find_element_by_id('loginButtonID').click()
+                    time.sleep(1)
+                    try:
+                        if driver.find_element_by_class_name('error error-block'):
+                            success = False
+                    except:
+                        success = True
+                except:
+                    print('[-] Invalid username or password!')
+                    self.username, self.password = credentials()
+                    success = False
+                if success:
+                    print('[i] Logged in successfully.')
+                    if self.logs == 'y':
+                        with open('logs.txt', 'a') as file: 
+                            file.write('"{}" logged in on {}'.format(self.username, datetime.datetime.now().astimezone(pytz.timezone('Asia/Tashkent')).strftime('%B %d, %Y at %H:%M:%S')))
+                            file.write('\n')
+                    break
 
-    def edit_barcodes(self, edit, *args, path=None):
+
+    def edit_barcodes(self, edit, logs,  *args, path=None):
         self.edit = edit
+        self.logs = logs
         self.args = args
         self.path = path
         if self.edit == '0':
-            data = pd.read_excel(self.path)
-            pass
+            while 1:
+                try:
+                    sets = int(input('[+] Number of sheets in excel file: '))
+                    break
+                except:
+                    print('\n[-] Only integers are acceptible!')
+            for sheet_number in range(1, sets+1):
+                data = pd.read_excel(self.path, sheet_name='Set {}'.format(sheet_number))
+                print('[i] Set {}.'.format(sheet_number))
+                for index, row in data.iterrows():
+                    barcode = str(row['Barcodes'])
+                    print('[i] Barcode: {}.'.format(barcode))
+                    driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
+                    driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                    time.sleep(1)
+                    for num in range(1, 11):
+                        try:
+                            driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                            # Circulation Class.
+                            Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+
+                            # Report Class.
+                            Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+
+                            # Call Number Prefix.
+                            if self.arg[2] == '0':
+                                driver.find_element_by_id('CallNumberPrefix').clear()
+
+                            # Call Number.
+                            if self.arg[3] == '0':
+                                driver.find_element_by_id('CallNumberMiddle').click()
+                            elif self.arg[3] == '1':
+                                pass
+                            else:
+                                temp = arg[3]
+                                temp = temp.split(' ')
+                                driver.find_element_by_id('CallNumberMiddle').clear()
+                                driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+
+                            # Physical Location.
+                            Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                                
+                            # Save Changes.
+                            driver.find_element_by_id('bsiSave').click()
+                            print('[i] Saved changes.')
+                            if self.logs == 'y':
+                                with open('logs.txt', 'a') as file:
+                                    file.write('Barcode: {}.'.format(barcode))
+                                    file.write('Circulation Class: {}.'.format(self.arg[0]))
+                                    file.write('Report Class: {}.'.format(self.arg[1]))
+                                    file.write('Call Number Prefix: {}.'.format(self.arg[2]))
+                                    file.write('Call Number: {}.'.format(self.arg[3]))
+                                    file.write('Physical Location: {}.'.format(self.arg[4]))
+                                    file.write('\n')
+                            time.sleep(2)
+
+                        except:
+                            break
+
+
+
+
+
     
         elif self.edit == '1':
             many_barcodes = False
@@ -353,7 +466,7 @@ class Atriuum():
                     many_barcodes = True
                     barcode = barcode.split(', ')
                     for b in barcode:
-                        print('[i] Barcode: {}'.format(b))
+                        print('[i] Barcode: {}.'.format(b))
                         driver.find_element_by_id('GlobalKeywordSearchField').send_keys(b)
                         driver.find_element_by_id('GlobalKeywordSearchButton').click()
                         time.sleep(1)
@@ -387,6 +500,15 @@ class Atriuum():
                                 # Save Changes.
                                 driver.find_element_by_id('bsiSave').click()
                                 print('[i] Saved changes.')
+                                if self.logs == 'y':
+                                    with open('logs.txt', 'a') as file:
+                                        file.write('Barcode: {}.'.format(barcode))
+                                        file.write('Circulation Class: {}.'.format(self.arg[0]))
+                                        file.write('Report Class: {}.'.format(self.arg[1]))
+                                        file.write('Call Number Prefix: {}.'.format(self.arg[2]))
+                                        file.write('Call Number: {}.'.format(self.arg[3]))
+                                        file.write('Physical Location: {}.'.format(self.arg[4]))
+                                        file.write('\n')
                                 time.sleep(2)
 
                             except:
@@ -426,33 +548,61 @@ class Atriuum():
                         # Save Changes.
                         driver.find_element_by_id('bsiSave').click()
                         print('[i] Saved changes.')
+                        if self.logs == 'y':
+                            with open('logs.txt', 'a') as file:
+                                file.write('Barcode: {}.'.format(barcode))
+                                file.write('Circulation Class: {}.'.format(self.arg[0]))
+                                file.write('Report Class: {}.'.format(self.arg[1]))
+                                file.write('Call Number Prefix: {}.'.format(self.arg[2]))
+                                file.write('Call Number: {}.'.format(self.arg[3]))
+                                file.write('Physical Location: {}.'.format(self.arg[4]))
+                                file.write('\n')
                         time.sleep(2)
                     except:
                         break
 
-    def close():
-        pass
+    def close(self, logs):
+        self.logs = logs
+        driver.quit()
+        if self.logs == 'y':
+            with open('logs.txt', 'a') as file:
+                file.write('Session Closed.')
+                file.write('\n')
 
 
 
 # MENU SCRIPT.
 intro()
-user = menu()
-if user == '0':
-    mode = mode()
-    username, password = credentials()
+logs = logging()
+while 1:
+    user = menu()
+    if user == '0':
+        mode = mode()
+        username, password = credentials()
 
-    # LOGIN SCRIPT.
-    website = Atriuum(username, password, mode)
-    website.open(username, password)
+        # LOGIN SCRIPT.
+        website = Atriuum(username, password, mode)
+        website.open(username, password, logs)
 
-    # EDIT SCRIPT.
-    edit, path = edit_options()
-    circulation, report, call_prefix, call_number, physical_location = edit_values()
-    if edit == '0':
-        website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location, path=path)
-    elif edit == '1':
-        website.edit_barcodes(edit, circulation, report, call_prefix, call_number, physical_location)
+        # EDIT SCRIPT.
+        edit, path = edit_options()
+        circulation, report, call_prefix, call_number, physical_location = edit_values()
+        if edit == '0':
+            website.edit_barcodes(edit,logs, circulation, report, call_prefix, call_number, physical_location, path=path)
+        elif edit == '1':
+            website.edit_barcodes(edit, logs, circulation, report, call_prefix, call_number, physical_location)
+        
+        print('\n[+] Finished!')
+        user = input('[+] Quit the program (y/n)? ')
+        if user == 'y':
+            print('[i] Quitting the program...')
+            website.exit(logs)
+            break
+        else:
+            continue
+
+input()
+
 
 # SCRIPT FOR CHANGING BOOK INFROMATION.
 for i in range(1):
