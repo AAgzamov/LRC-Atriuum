@@ -17,7 +17,7 @@ Contributions are welcome!
 
 To execute the script properly you need [geckodriver](https://github.com/mozilla/geckodriver/releases/) installed in your machine.
 #### Geckodriver for Linux x64:
-1. Make shell script executable: ``chmod +x geck.sh``.
+1. Make shell script executable: ``chmod +x install.sh``.
 2. Run ``./geck.sh``.
 
 
