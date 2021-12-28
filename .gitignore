@@ -1,3 +1,5 @@
 # Geckodriver logs.
 geckodriver.log
+
+# Program logs.
 logs.txt
