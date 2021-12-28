@@ -2,6 +2,7 @@ try:
     from selenium import webdriver
     from selenium.webdriver.support.ui import Select
     from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.by import By
     import pandas as pd
     import time
     import os
@@ -328,17 +329,17 @@ class Atriuum():
             driver = webdriver.Firefox()
             driver.get('https://wiutuz.booksys.net')
             time.sleep(1)
-            driver.find_element_by_id('librarylogonlink0').click()
+            driver.find_element(By.ID, 'librarylogonlink0').click()
             while 1:
                 try:
                     time.sleep(1)
                     print('[i] Entering username and password...')
-                    driver.find_element_by_id('login_username').send_keys(self.username)
-                    driver.find_element_by_id('password').send_keys(self.password)
-                    driver.find_element_by_id('loginButtonID').click()
+                    driver.find_element(By.ID, 'login_username').send_keys(self.username)
+                    driver.find_element(By.ID, 'password').send_keys(self.password)
+                    driver.find_element('By.ID, loginButtonID').click()
                     time.sleep(1)
                     try:
-                        if driver.find_element_by_class_name('error error-block'):
+                        if driver.find_element(By.CLASS_NAME, 'error error-block'):
                             success = False
                     except:
                         success = True
@@ -362,17 +363,17 @@ class Atriuum():
             print('[i] Wait...')
             driver.get('https://wiutuz.booksys.net')
             time.sleep(1)
-            driver.find_element_by_id('librarylogonlink0').click()
+            driver.find_element(By.ID, 'librarylogonlink0').click()
             while 1:
                 try:
                     time.sleep(1)
                     print('[i] Entering the username and password...')
-                    driver.find_element_by_id('login_username').send_keys(self.username)
-                    driver.find_element_by_id('password').send_keys(self.password)
-                    driver.find_element_by_id('loginButtonID').click()
+                    driver.find_element(By.ID, 'login_username').send_keys(self.username)
+                    driver.find_element(By.ID, 'password').send_keys(self.password)
+                    driver.find_element(By.ID, 'loginButtonID').click()
                     time.sleep(1)
                     try:
-                        if driver.find_element_by_class_name('error error-block'):
+                        if driver.find_element(By.CLASS_NAME, 'error error-block'):
                             success = False
                     except:
                         success = True
@@ -407,38 +408,38 @@ class Atriuum():
                 for index, row in data.iterrows():
                     barcode = str(row['Barcodes'])
                     print('[i] Barcode: {}.'.format(barcode))
-                    driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
-                    driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                    driver.find_element(By.ID, 'GlobalKeywordSearchField').send_keys(barcode)
+                    driver.find_element(By.ID, 'GlobalKeywordSearchButton').click()
                     time.sleep(1)
                     for num in range(1, 11):
                         try:
-                            driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                            driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                             # Circulation Class.
-                            Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+                            Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
 
                             # Report Class.
-                            Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                            Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
 
                             # Call Number Prefix.
                             if self.arg[2] == '0':
-                                driver.find_element_by_id('CallNumberPrefix').clear()
+                                driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                             # Call Number.
                             if self.arg[3] == '0':
-                                driver.find_element_by_id('CallNumberMiddle').click()
+                                driver.find_element(By.ID, 'CallNumberMiddle').click()
                             elif self.arg[3] == '1':
                                 pass
                             else:
                                 temp = arg[3]
                                 temp = temp.split(' ')
-                                driver.find_element_by_id('CallNumberMiddle').clear()
-                                driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
 
                             # Physical Location.
-                            Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                            Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                             # Save Changes.
-                            driver.find_element_by_id('bsiSave').click()
+                            driver.find_element(By.ID, 'bsiSave').click()
                             print('[i] Saved changes.')
                             if self.logs == 'y':
                                 with open('logs.txt', 'a') as file:
@@ -468,38 +469,38 @@ class Atriuum():
                     barcode = barcode.split(', ')
                     for b in barcode:
                         print('[i] Barcode: {}.'.format(b))
-                        driver.find_element_by_id('GlobalKeywordSearchField').send_keys(b)
-                        driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                        driver.find_element(By.ID, 'GlobalKeywordSearchField').send_keys(b)
+                        driver.find_element(By.ID, 'GlobalKeywordSearchButton').click()
                         time.sleep(1)
                         for num in range(1, 11):
                             try:
-                                driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                                driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                                 # Circulation Class.
-                                Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+                                Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
                                 
                                 # Report Class.
-                                Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                                Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
                                 
                                 # Call Number Prefix.
                                 if self.arg[2] == '0':
-                                    driver.find_element_by_id('CallNumberPrefix').clear()
+                                    driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                                 # Call Number.
                                 if self.arg[3] == '0':
-                                    driver.find_element_by_id('CallNumberMiddle').clear()
+                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
                                 elif self.arg[3] == '1':
                                     pass
                                 else:
                                     temp = arg[3]
                                     temp = temp.split(' ')
-                                    driver.find_element_by_id('CallNumberMiddle').clear()
-                                    driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                    driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
                                 
                                 # Physical Location.
-                                Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                                Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                                 # Save Changes.
-                                driver.find_element_by_id('bsiSave').click()
+                                driver.find_element(By.ID, 'bsiSave').click()
                                 print('[i] Saved changes.')
                                 if self.logs == 'y':
                                     with open('logs.txt', 'a') as file:
@@ -516,38 +517,38 @@ class Atriuum():
                                 break
             if not many_barcodes:
                 print('[i] Barcode: {}'.format(barcode))
-                driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
-                driver.find_element_by_id('GlobalKeywordSearchButton').click()
+                driver.find_element(By.ID, 'GlobalKeywordSearchField').send_keys(barcode)
+                driver.find_element(By.ID, 'GlobalKeywordSearchButton').click()
                 time.sleep(1)
                 for num in range(1, 11):
                     try:
-                        driver.find_element_by_id('EditActiveHolding{num}'.format(str(num))).click()
+                        driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                         # Circulation Class.
-                        Select(driver.find_element_by_id('CircTypeCode')).select_by_visible_text(self.arg[0])
+                        Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
                                 
                         # Report Class.
-                        Select(driver.find_element_by_id('ReportClassCode')).select_by_visible_text(self.arg[1])
+                        Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
                                 
                         # Call Number Prefix.
                         if self.arg[2] == '0':
-                            driver.find_element_by_id('CallNumberPrefix').clear()
+                            driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                         # Call Number.
                         if self.arg[3] == '0':
-                            driver.find_element_by_id('CallNumberMiddle').clear()
+                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
                         elif self.arg[3] == '1':
                             pass
                         else:
                             temp = arg[3]
                             temp = temp.split(' ')
-                            driver.find_element_by_id('CallNumberMiddle').clear()
-                            driver.find_element_by_id('CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                            driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
                                 
                         # Physical Location.
-                        Select(driver.find_element_by_id('SublocationCode')).select_by_visible_text(self.arg[4])
+                        Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                         # Save Changes.
-                        driver.find_element_by_id('bsiSave').click()
+                        driver.find_element(By.ID, 'bsiSave').click()
                         print('[i] Saved changes.')
                         if self.logs == 'y':
                             with open('logs.txt', 'a') as file:

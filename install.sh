@@ -2,7 +2,6 @@
 
 if [ "$UID" = "0" ];
 then
-	#GECKODRIVER=$(grep "geckodriver" /usr/local/bin)
 	if [ -e /usr/local/bin/geckodriver ];
 	then
 		echo "geckodriver is already installed."
