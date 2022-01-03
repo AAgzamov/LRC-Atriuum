@@ -14,6 +14,7 @@ except:
     print('[-] Cannot import libraries!')
     print('[i] Execution is impossible.')
     input()
+    exit()
 
 def intro():
     print('''
@@ -71,6 +72,16 @@ def logging():
         else:
             print('[-] Invalid option!')
 
+def make_log(logs, *args):
+    if logs == 'y':
+        if args[0] == 'Barcode':
+            with open('logs.txt', 'a') as file:
+                file.write('\n')
+                file.write('{}: {}.'.format(args[0], args[1]))
+        else:
+            with open('logs.txt', 'a') as file:
+                file.write('{}: {}.'.format(args[0], args[1]))
+        
 def credentials():
     username = str(input('\n[+] Username: '))
     password = str(getpass.getpass('[+] Password: '))
@@ -83,13 +94,15 @@ def circulation_class():
             
             Item Circulation Class.
 
+            [S] SKIP.
+
             [0] 1-Day Loan.         [4] AV Circ.
             [1] 3-Day Loan.         [5] Circulation.
             [2] 7-Day Loan.         [6] Online.
             [3] 30-Day Loan.        [7] Reference.
 
                 ''')
-        user = str(input('-->'))
+        user = str(input('--> ')).lower()
         if user == '0':
             return '1-Day Loan'
         elif user == '1':
@@ -106,6 +119,8 @@ def circulation_class():
             return 'Online'
         elif user == '7':
             return 'Reference'
+        elif user == 's':
+            return None
         else:
             print('[-] Invalid option!')
         
@@ -116,16 +131,18 @@ def report_class():
             
             Item Report Class.
 
+            [S] SKIP.
+
             [0] 000-099.        [6] 600-699.            [12] CD.                    [18] Undefined.
             [1] 100-199.        [7] 700-799.            [13] Easy Book.             [19] Videocassettes.
             [2] 200-299.        [8] 800-899.            [14] eBook.
-            [3] 300-399.        [9] 900-999.            [15] Fiction.
+            [3] 300-399.        [9] 900-999.            [15] Fiction.               
             [4] 400-499.        [10] Audiocassettes.    [16] Journal/Newspaper.
             [5] 500-599.        [11] Biography.         [17] Large Print.
 
 
                 ''')
-        user = str(input('-->'))
+        user = str(input('--> ')).lower()
         if user == '0':
             return '000-099'
         elif user == '1':
@@ -166,6 +183,8 @@ def report_class():
             return 'Undefined'
         elif user == '19':
             return 'Videocassettes'
+        elif user == 's':
+            return None
         else:
             print('[-] Invalid option!')
 
@@ -175,14 +194,19 @@ def call_prefix():
         print('''
         
         What to do with Call Number Prefix?
-        [0] Clean.
+
+        [S] SKIP.
+
+        [0] CLEAN.
 
             ''')
 
-        user = str(input('--> '))
+        user = str(input('--> ')).lower()
         if user == '0':
             return user
-        elif user != '0':
+        elif user == 's':
+            return None
+        else:
             print('[-] Invalid option!')
             continue
 
@@ -193,17 +217,20 @@ def call_number():
         print('''
         
         What to do with the Call Number?
-        [0] Clean.
+
+        [S] SKIP.
+
+        [0] CLEAN.
         [1] "Fiction" and "First 3 letters of the author's surname".
-        [2] Other.
+        [2] OTHER.
 
             ''')
 
-        user = str(input('--> '))
+        user = str(input('--> ')).lower()
         if user == '0':
             return user
         elif user == '1':
-            pass
+            return user
         elif user == '2':
             while 1:
                 user = input('Set Call Number: ')
@@ -211,6 +238,8 @@ def call_number():
                     break
                 else:
                     return user
+        elif user == 's':
+            return None
         else:
             print('[-] Invalid option!')
             continue
@@ -221,16 +250,18 @@ def physical_location():
         print('''
         
         Indicate Physical Location.
+    
+        [S] SKIP.
 
         [0] At Circulation Desk.        [6] Final Projects.     [12] Silent Area.
         [1] Cass Main Area.             [7] Internet.           [13] Strategy Room.
         [2] CD Main Area.               [8] Journals.           [14] Undefined Items.
         [3] Discussion Area.            [9] LRC Archive.        [15] Urgench-Samarkand.
         [4] Dormitory 1.                [10] Lyceum Library.    [16] WIUT_Lyceum Library.
-        [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).
+        [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).     
 
     ''')
-        user = str(input('--> '))
+        user = str(input('--> ')).lower()
         if user == '0':
             return 'At Circulation Desk'
         elif user == '1':
@@ -267,6 +298,8 @@ def physical_location():
             return 'WIUT_Lyceum Library'
         elif user == '17':
             return 'Work Group Area (Cherdak)'
+        elif user == 's':
+            return None
         else:
             print('[-] Invalid option!')
             continue
@@ -410,33 +443,81 @@ class Atriuum():
                     print('[i] Barcode: {}.'.format(barcode))
                     driver.find_element(By.ID, 'GlobalKeywordSearchField').send_keys(barcode)
                     driver.find_element(By.ID, 'GlobalKeywordSearchButton').click()
+                    make_log(self.logs, 'Barcode', barcode)
                     time.sleep(1)
                     for num in range(1, 11):
                         try:
                             driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                             # Circulation Class.
-                            Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
-
+                            if self.args[0] != None:
+                                Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.args[0])
+                                make_log(self.logs, 'Circulation Class', self.args[0])
                             # Report Class.
-                            Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
+                            if self.args[1] != None:
+                                Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.args[1])
+                                make_log(self.logs, 'Report Class', self.args[1])
 
                             # Call Number Prefix.
-                            if self.arg[2] == '0':
-                                driver.find_element(By.ID, 'CallNumberPrefix').clear()
+                            if self.args[2] != None:
+                                if self.arg[2] == '0':
+                                    driver.find_element(By.ID, 'CallNumberPrefix').clear()
+                                    make_log(self.logs, 'Call Number Prefix', self.args[2])
 
                             # Call Number.
-                            if self.arg[3] == '0':
-                                driver.find_element(By.ID, 'CallNumberMiddle').click()
-                            elif self.arg[3] == '1':
-                                pass
-                            else:
-                                temp = arg[3]
-                                temp = temp.split(' ')
-                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                            if self.args[3] != None:
+                                if self.args[3] == '0':
+                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                elif self.args[3] == '1':
+                                    try:
+                                        author = driver.find_element_by_id('bibliographicAuthor').text
+                                        print('[i] Original author name: {} '.format(author))
+                                        auth = author.split(' ')
+                                        if len(auth) > 2:
+                                            with open('check.txt', 'a') as file:
+                                                file.write('\n')
+                                                file.write('Several authors at: {}'.format(barcode))
+                                        # if "Curtis, John".
+                                        if str(auth[0])[-1] == ',':
+                                            author = auth[0]
+                                            #x = auth[0]
+                                            #for i in range(len(x)):
+                                            #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                            #        x.pop(i)
+                                        # if "Curtis J".
+                                        elif len(str(auth[1])) <= 1:
+                                            author = auth[0]
+                                            #x = auth[0]
+                                            #for i in range(len(x)):
+                                            #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                            #        x.pop(i)
+                                        # if "Curtis J.".
+                                        elif str(auth[1])[-1] == '.':
+                                            author = auth[0]
+                                            #x = auth[0]
+                                            #for i in range(len(x)):
+                                            #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                            #        x.pop(i)
+                                        else:
+                                            author = auth[1]
+                                            #x = auth[1]
+                                            #for i in range(len(x)):
+                                            #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                            #        x.pop(i)
+                                        author = author[0].upper() + author[1:3].lower()
+                                        #print(f' [Info] Author name: {author} ...')
+                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                        driver.find_element(By.ID, 'CallNumberMiddle').send_keys('Fiction', Keys.ENTER, author)
+                                    except:
+                                        print('[-] Cannot define author name!')
+                                else:
+                                    temp = arg[3]
+                                    temp = temp.split(' ')
+                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                    driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
 
                             # Physical Location.
-                            Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
+                            if self.arg[4] != None:
+                                Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                             # Save Changes.
                             driver.find_element(By.ID, 'bsiSave').click()
@@ -455,11 +536,7 @@ class Atriuum():
                         except:
                             break
 
-
-
-
-
-    
+ 
         elif self.edit == '1':
             many_barcodes = False
             barcode = str(input('[+] Enter the barcodes: '))
@@ -476,28 +553,75 @@ class Atriuum():
                             try:
                                 driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                                 # Circulation Class.
-                                Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
+                                if self.arg[0] != None:
+                                    Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
                                 
                                 # Report Class.
-                                Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
+                                if self.arg[1] != None:
+                                    Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
                                 
                                 # Call Number Prefix.
-                                if self.arg[2] == '0':
-                                    driver.find_element(By.ID, 'CallNumberPrefix').clear()
+                                if self.arg[2] != None:
+                                    if self.arg[2] == '0':
+                                        driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                                 # Call Number.
-                                if self.arg[3] == '0':
-                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                elif self.arg[3] == '1':
-                                    pass
-                                else:
-                                    temp = arg[3]
-                                    temp = temp.split(' ')
-                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                    driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                if self.arg[3] != None:
+                                    if self.arg[3] == '0':
+                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                    elif self.arg[3] == '1':
+                                        try:
+                                            author = driver.find_element_by_id('bibliographicAuthor').text
+                                            print('[i] Original author name: {} '.format(author))
+                                            auth = author.split(' ')
+                                            if len(auth) > 2:
+                                                with open('check.txt', 'a') as file:
+                                                    file.write('\n')
+                                                    file.write('Several authors at: {}'.format(barcode))
+                                            # if "Curtis, John".
+                                            if str(auth[0])[-1] == ',':
+                                                author = auth[0]
+                                                #x = auth[0]
+                                                #for i in range(len(x)):
+                                                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                                #        x.pop(i)
+                                            # if "Curtis J".
+                                            elif len(str(auth[1])) <= 1:
+                                                author = auth[0]
+                                                #x = auth[0]
+                                                #for i in range(len(x)):
+                                                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                                #        x.pop(i)
+                                            # if "Curtis J.".
+                                            elif str(auth[1])[-1] == '.':
+                                                author = auth[0]
+                                                #x = auth[0]
+                                                #for i in range(len(x)):
+                                                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                                #        x.pop(i)
+                                            else:
+                                                author = auth[1]
+                                                #x = auth[1]
+                                                #for i in range(len(x)):
+                                                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                                #        x.pop(i)
+                                            author = author[0].upper() + author[1:3].lower()
+                                            #print(f' [Info] Author name: {author} ...')
+                                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                            driver.find_element(By.ID, 'CallNumberMiddle').send_keys('Fiction', Keys.ENTER, author)
+
+                                        except:
+                                            print('[-] Cannot define author name!')
+
+                                    else:
+                                        temp = arg[3]
+                                        temp = temp.split(' ')
+                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                        driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
                                 
                                 # Physical Location.
-                                Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
+                                if self.arg[4] != None:
+                                    Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                                 # Save Changes.
                                 driver.find_element(By.ID, 'bsiSave').click()
@@ -519,33 +643,81 @@ class Atriuum():
                 print('[i] Barcode: {}'.format(barcode))
                 driver.find_element(By.ID, 'GlobalKeywordSearchField').send_keys(barcode)
                 driver.find_element(By.ID, 'GlobalKeywordSearchButton').click()
+                make_log(self.logs, 'Barcode', barcode)
                 time.sleep(1)
                 for num in range(1, 11):
                     try:
                         driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
                         # Circulation Class.
-                        Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
+                        if self.arg[0] != None:
+                            Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
                                 
                         # Report Class.
-                        Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
+                        if self.arg[1] != None:
+                            Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
                                 
                         # Call Number Prefix.
-                        if self.arg[2] == '0':
-                            driver.find_element(By.ID, 'CallNumberPrefix').clear()
+                        if self.arg[2] != None:
+                            if self.arg[2] == '0':
+                                driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                         # Call Number.
-                        if self.arg[3] == '0':
-                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                        elif self.arg[3] == '1':
-                            pass
-                        else:
-                            temp = arg[3]
-                            temp = temp.split(' ')
-                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                            driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                        if self.arg[3] != None:
+                            if self.arg[3] == '0':
+                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                            elif self.arg[3] == '1':
+                                try:
+                                    author = driver.find_element_by_id('bibliographicAuthor').text
+                                    print('[i] Original author name: {} '.format(author))
+                                    auth = author.split(' ')
+                                    if len(auth) > 2:
+                                        with open('check.txt', 'a') as file:
+                                            file.write('\n')
+                                            file.write('Several authors at: {}'.format(barcode))
+                                    # if "Curtis, John".
+                                    if str(auth[0])[-1] == ',':
+                                        author = auth[0]
+                                        #x = auth[0]
+                                        #for i in range(len(x)):
+                                        #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                        #        x.pop(i)
+                                    # if "Curtis J".
+                                    elif len(str(auth[1])) <= 1:
+                                        author = auth[0]
+                                        #x = auth[0]
+                                        #for i in range(len(x)):
+                                        #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                        #        x.pop(i)
+                                    # if "Curtis J.".
+                                    elif str(auth[1])[-1] == '.':
+                                        author = auth[0]
+                                        #x = auth[0]
+                                        #for i in range(len(x)):
+                                        #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                        #        x.pop(i)
+                                    else:
+                                        author = auth[1]
+                                        #x = auth[1]
+                                        #for i in range(len(x)):
+                                        #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
+                                        #        x.pop(i)
+                                    author = author[0].upper() + author[1:3].lower()
+                                    #print(f' [Info] Author name: {author} ...')
+                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                    driver.find_element(By.ID, 'CallNumberMiddle').send_keys('Fiction', Keys.ENTER, author)
+
+                                except:
+                                    print('[-] Cannot define author name!')
+
+                            else:
+                                temp = arg[3]
+                                temp = temp.split(' ')
+                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
                                 
                         # Physical Location.
-                        Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
+                        if self.arg[4] != None:
+                            Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
                                 
                         # Save Changes.
                         driver.find_element(By.ID, 'bsiSave').click()
@@ -568,7 +740,8 @@ class Atriuum():
         driver.quit()
         if self.logs == 'y':
             with open('logs.txt', 'a') as file:
-                file.write('Session Closed.')
+                file.write('\n')
+                file.write('Session Ended.')
                 file.write('\n')
 
 
@@ -598,7 +771,7 @@ while 1:
         user = input('[+] Quit the program (y/n)? ')
         if user == 'y':
             print('[i] Quitting the program...')
-            website.exit(logs)
+            website.close(logs)
             break
         else:
             continue
@@ -606,104 +779,3 @@ while 1:
 input()
 
 
-# SCRIPT FOR CHANGING BOOK INFROMATION.
-for i in range(1):
-    data = pd.read_excel('./Barcodes.xlsx')
-    #if i == 0:
-    #    data = pd.read_excel('./Barcodes.xlsx', sheet_name='Set 1')
-    #    print(f' [Info]Reading Set 1 ...')
-    #elif i == 1:
-    #    data = pd.read_excel('./Barcodes.xlsx', sheet_name='Set 1')
-    #    print(f' [Info]Reading Set 2 ...')
-    #elif i ==  2:
-    #    data = pd.read_excel('./Barcodes.xlsx', sheet_name='Set 3')
-    #    print(f' [Info]Reading Set 3 ...')
-    #elif i == 3:
-    #    data = pd.read_excel('./Barcodes.xlsx', sheet_name='Set 4')
-    #    print(f' [Info]Reading Set 4 ...')
-    #elif i == 4:
-    #    data = pd.read_excel('./Barcodes.xlsx', sheet_name='Set 5')
-    #    print(f' [Info]Reading Set 5 ...')
-
-    for index, row in data.iterrows():
-        print(f' Sleeping for 3 seconds ...')
-        time.sleep(3)
-        barcode = str(row['Barcodes'])
-        print(f'\n [Info] Editing Barcode: {barcode}\n')
-        driver.find_element_by_id('GlobalKeywordSearchField').send_keys(barcode)
-        #time.sleep(2)
-        driver.find_element_by_id('GlobalKeywordSearchButton').click()
-        time.sleep(1)
-        driver.find_element_by_id('EditActiveHolding1').click()
-        time.sleep(1)
-        try:
-            author = driver.find_element_by_id('bibliographicAuthor').text
-            print(f' [Info] Original author name: {author} ')
-            auth = author.split(' ')
-            if len(auth) > 2:
-                with open('check.txt', 'a') as f:
-                    f.write('\n')
-                    f.write(f'Several authors at: {barcode}')
-            # if "Curtis, John".
-            if str(auth[0])[-1] == ',':
-                author = auth[0]
-                #x = auth[0]
-                #for i in range(len(x)):
-                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
-                #        x.pop(i)
-            # if "Curtis J".
-            elif len(str(auth[1])) <= 1:
-                author = auth[0]
-                #x = auth[0]
-                #for i in range(len(x)):
-                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
-                #        x.pop(i)
-            # if "Curtis J.".
-            elif str(auth[1])[-1] == '.':
-                author = auth[0]
-                #x = auth[0]
-                #for i in range(len(x)):
-                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
-                #        x.pop(i)
-            else:
-                author = auth[1]
-                #x = auth[1]
-                #for i in range(len(x)):
-                #    if x[i] == '\'' or x[i] == '.' or x[i] == ',':
-                #        x.pop(i)
-            author = author[0].upper() + author[1:3].lower()
-            #print(f' [Info] Author name: {author} ...')
-        except:
-            print(f' [Warning] Cannot define author name!')
-
-        #print(f' [Info] Changing Circulation Class ...')
-        circulation = Select(driver.find_element_by_id('CircTypeCode'))
-        circulation.select_by_visible_text('30-Day Loan')
-        #time.sleep(1)
-        #print(f' [Info] Changing Report Class ...')
-        report = Select(driver.find_element_by_id('ReportClassCode'))
-        report.select_by_visible_text('Fiction')
-        #print(f' [Info] Clearing Prefix ...')
-        driver.find_element_by_id('CallNumberPrefix').clear()
-        #time.sleep(2)
-        #print(f' [Info] Clearing Call No. ...')
-        driver.find_element_by_id('CallNumberMiddle').clear()
-        print(f' [Info] Changing Call No.:')
-        print(f'Fiction\n{author}')
-        try:
-            driver.find_element_by_id('CallNumberMiddle').send_keys('Fiction', Keys.ENTER, author)
-        except:
-            print(f' [Warning] Could not change Call No.!')
-        for i in range(len(author)):
-            if author[i] == '\'' or author[i] == '.' or author[i] == ',':
-                with open('check.txt', 'a') as f:
-                    f.write('\n')
-                    f.write(f'Strange name at: {barcode}')
-                break
-        #print(f' [Info] Saving...')
-        driver.find_element_by_id('bsiSave').click()
-        print(f'\n[+] Saved changes of {barcode}!')
-
-print('Finished!')
-
-input()

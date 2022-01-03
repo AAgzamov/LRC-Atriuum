@@ -6,7 +6,6 @@ then
 	then
 		echo "geckodriver is already installed."
 		chmod +x /usr/local/bin/geckodriver
-		pip3 install -r requirements.txt
 
 	else
 		echo "Downloading geckodriver..."
@@ -16,8 +15,8 @@ then
 		chmod +x geckodriver
 		echo "Moving geckodriver to /usr/local/bin..."
 		mv geckodriver /usr/local/bin/
-		pip3 install -r requirements.txt
 	fi
+	pip3 install -r requirements.txt
 else
 	echo "Run with sudo!"
 fi
