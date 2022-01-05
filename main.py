@@ -18,7 +18,7 @@ except:
 
 def intro():
     print('''
-    
+
         00      000000.   000000        00          00  00000000  00    00  00000000
         00      000  00  00`````        00          00  ```00```  00    00  ```00```
         00      000000.  00              00   00   00`     00     00    00     00
@@ -28,7 +28,7 @@ def intro():
         ``````  ``  ``    ``````          ````  ````    ````````  ````````     ``
 
 
-                                                            By AAgzamov 
+                                                            By AAgzamov
 
             ''')
 
@@ -40,7 +40,7 @@ def license():
 def menu():
     while 1:
         print('''
-        
+
         [0] Start.
         [1] License.
 
@@ -80,8 +80,8 @@ def make_log(logs, *args):
                 file.write('{}: {}.'.format(args[0], args[1]))
         else:
             with open('logs.txt', 'a') as file:
-                file.write('{}: {}.'.format(args[0], args[1]))
-        
+                file.write(' {}: {}.'.format(args[0], args[1]))
+
 def credentials():
     username = str(input('\n[+] Username: '))
     password = str(getpass.getpass('[+] Password: '))
@@ -91,7 +91,7 @@ def circulation_class():
     while 1:
         back = False
         print('''
-            
+
             Item Circulation Class.
 
             [S] SKIP.
@@ -123,12 +123,12 @@ def circulation_class():
             return None
         else:
             print('[-] Invalid option!')
-        
+
 def report_class():
     while 1:
         back = False
         print('''
-            
+
             Item Report Class.
 
             [S] SKIP.
@@ -136,7 +136,7 @@ def report_class():
             [0] 000-099.        [6] 600-699.            [12] CD.                    [18] Undefined.
             [1] 100-199.        [7] 700-799.            [13] Easy Book.             [19] Videocassettes.
             [2] 200-299.        [8] 800-899.            [14] eBook.
-            [3] 300-399.        [9] 900-999.            [15] Fiction.               
+            [3] 300-399.        [9] 900-999.            [15] Fiction.
             [4] 400-499.        [10] Audiocassettes.    [16] Journal/Newspaper.
             [5] 500-599.        [11] Biography.         [17] Large Print.
 
@@ -192,7 +192,7 @@ def call_prefix():
     while 1:
         back = False
         print('''
-        
+
         What to do with Call Number Prefix?
 
         [S] SKIP.
@@ -215,7 +215,7 @@ def call_number():
     while 1:
         back = False
         print('''
-        
+
         What to do with the Call Number?
 
         [S] SKIP.
@@ -233,7 +233,7 @@ def call_number():
             return user
         elif user == '2':
             while 1:
-                user = input('Set Call Number: ')
+                user = str(input('Set Call Number: '))
                 if user == 'back()':
                     break
                 else:
@@ -248,9 +248,9 @@ def physical_location():
     while 1:
         back = False
         print('''
-        
+
         Indicate Physical Location.
-    
+
         [S] SKIP.
 
         [0] At Circulation Desk.        [6] Final Projects.     [12] Silent Area.
@@ -258,7 +258,7 @@ def physical_location():
         [2] CD Main Area.               [8] Journals.           [14] Undefined Items.
         [3] Discussion Area.            [9] LRC Archive.        [15] Urgench-Samarkand.
         [4] Dormitory 1.                [10] Lyceum Library.    [16] WIUT_Lyceum Library.
-        [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).     
+        [5] Dormitory 2.                [11] Main Library.      [17] Work Group Area (Cherdak).
 
     ''')
         user = str(input('--> ')).lower()
@@ -343,7 +343,7 @@ def edit_values():
     report_value = report_class()
     call_prefix_value = call_prefix()
     call_number_value = call_number()
-    physical_location_value = physical_location()    
+    physical_location_value = physical_location()
     return circulation_value, report_value, call_prefix_value, call_number_value, physical_location_value
 
 
@@ -367,9 +367,11 @@ class Atriuum():
                 try:
                     time.sleep(1)
                     print('[i] Entering username and password...')
+                    driver.find_element(By.ID, 'login_username').clear()
+                    driver.find_element(By.ID, 'password').clear()
                     driver.find_element(By.ID, 'login_username').send_keys(self.username)
                     driver.find_element(By.ID, 'password').send_keys(self.password)
-                    driver.find_element('By.ID, loginButtonID').click()
+                    driver.find_element(By.ID, 'loginButtonID').click()
                     time.sleep(1)
                     try:
                         if driver.find_element(By.CLASS_NAME, 'error error-block'):
@@ -387,7 +389,7 @@ class Atriuum():
                             file.write('"{}" logged in on {}'.format(self.username, datetime.datetime.now().astimezone(pytz.timezone('Asia/Tashkent')).strftime('%B %d, %Y at %H:%M:%S')))
                             file.write('\n')
                     break
-                
+
         elif self.mode == 's':
             options = webdriver.FirefoxOptions()
             options.headless = True
@@ -401,6 +403,8 @@ class Atriuum():
                 try:
                     time.sleep(1)
                     print('[i] Entering the username and password...')
+                    driver.find_element(By.ID, 'login_username').clear()
+                    driver.find_element(By.ID, 'password').clear()
                     driver.find_element(By.ID, 'login_username').send_keys(self.username)
                     driver.find_element(By.ID, 'password').send_keys(self.password)
                     driver.find_element(By.ID, 'loginButtonID').click()
@@ -417,7 +421,7 @@ class Atriuum():
                 if success:
                     print('[i] Logged in successfully.')
                     if self.logs == 'y':
-                        with open('logs.txt', 'a') as file: 
+                        with open('logs.txt', 'a') as file:
                             file.write('"{}" logged in on {}'.format(self.username, datetime.datetime.now().astimezone(pytz.timezone('Asia/Tashkent')).strftime('%B %d, %Y at %H:%M:%S')))
                             file.write('\n')
                     break
@@ -447,7 +451,7 @@ class Atriuum():
                     time.sleep(1)
                     for num in range(1, 11):
                         try:
-                            driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
+                            driver.find_element(By.ID, 'EditActiveHolding{}'.format(str(num))).click()
                             # Circulation Class.
                             if self.args[0] != None:
                                 Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.args[0])
@@ -459,7 +463,7 @@ class Atriuum():
 
                             # Call Number Prefix.
                             if self.args[2] != None:
-                                if self.arg[2] == '0':
+                                if self.args[2] == '0':
                                     driver.find_element(By.ID, 'CallNumberPrefix').clear()
                                     make_log(self.logs, 'Call Number Prefix', self.args[2])
 
@@ -510,33 +514,43 @@ class Atriuum():
                                     except:
                                         print('[-] Cannot define author name!')
                                 else:
-                                    temp = arg[3]
-                                    temp = temp.split(' ')
-                                    driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                    driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                    temp = self.args[3]
+                                    for space in temp:
+                                        if space == '':
+                                            temp = temp.split(' ')
+                                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                            driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                        else:
+                                            driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                            driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp)
 
                             # Physical Location.
-                            if self.arg[4] != None:
-                                Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
-                                
+                            if self.args[4] != None:
+                                Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.args[4])
+
                             # Save Changes.
                             driver.find_element(By.ID, 'bsiSave').click()
                             print('[i] Saved changes.')
-                            if self.logs == 'y':
-                                with open('logs.txt', 'a') as file:
-                                    file.write('Barcode: {}.'.format(barcode))
-                                    file.write('Circulation Class: {}.'.format(self.arg[0]))
-                                    file.write('Report Class: {}.'.format(self.arg[1]))
-                                    file.write('Call Number Prefix: {}.'.format(self.arg[2]))
-                                    file.write('Call Number: {}.'.format(self.arg[3]))
-                                    file.write('Physical Location: {}.'.format(self.arg[4]))
-                                    file.write('\n')
+                            make_log(self.logs, 'Circulation Class', self.args[0])
+                            make_log(self.logs, 'Report Class', self.args[1])
+                            make_log(self.logs, 'Call Number Prefix', self.args[2])
+                            make_log(self.logs, 'Call Number', self.args[3])
+                            make_log(self.logs, 'Physical Location', self.args[4])
+                            # if self.logs == 'y':
+                            #     with open('logs.txt', 'a') as file:
+                            #         file.write('Barcode: {}.'.format(barcode))
+                            #         file.write('Circulation Class: {}.'.format(self.args[0]))
+                            #         file.write('Report Class: {}.'.format(self.args[1]))
+                            #         file.write('Call Number Prefix: {}.'.format(self.args[2]))
+                            #         file.write('Call Number: {}.'.format(self.args[3]))
+                            #         file.write('Physical Location: {}.'.format(self.args[4]))
+                            #         file.write('\n')
                             time.sleep(2)
 
                         except:
                             break
 
- 
+
         elif self.edit == '1':
             many_barcodes = False
             barcode = str(input('[+] Enter the barcodes: '))
@@ -551,25 +565,25 @@ class Atriuum():
                         time.sleep(1)
                         for num in range(1, 11):
                             try:
-                                driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
+                                driver.find_element(By.ID, 'EditActiveHolding{}'.format(str(num))).click()
                                 # Circulation Class.
-                                if self.arg[0] != None:
-                                    Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
-                                
+                                if self.args[0] != None:
+                                    Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.args[0])
+
                                 # Report Class.
-                                if self.arg[1] != None:
-                                    Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
-                                
+                                if self.args[1] != None:
+                                    Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.args[1])
+
                                 # Call Number Prefix.
-                                if self.arg[2] != None:
-                                    if self.arg[2] == '0':
+                                if self.args[2] != None:
+                                    if self.args[2] == '0':
                                         driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                                 # Call Number.
-                                if self.arg[3] != None:
-                                    if self.arg[3] == '0':
+                                if self.args[3] != None:
+                                    if self.args[3] == '0':
                                         driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                    elif self.arg[3] == '1':
+                                    elif self.args[3] == '1':
                                         try:
                                             author = driver.find_element_by_id('bibliographicAuthor').text
                                             print('[i] Original author name: {} '.format(author))
@@ -614,26 +628,31 @@ class Atriuum():
                                             print('[-] Cannot define author name!')
 
                                     else:
-                                        temp = arg[3]
-                                        temp = temp.split(' ')
-                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                        driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
-                                
+                                        temp = self.args[3]
+                                        for space in temp:
+                                            if space == '':
+                                                temp = temp.split(' ')
+                                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                            else:
+                                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp)
+
                                 # Physical Location.
-                                if self.arg[4] != None:
-                                    Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
-                                
+                                if self.args[4] != None:
+                                    Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.args[4])
+
                                 # Save Changes.
                                 driver.find_element(By.ID, 'bsiSave').click()
                                 print('[i] Saved changes.')
                                 if self.logs == 'y':
                                     with open('logs.txt', 'a') as file:
                                         file.write('Barcode: {}.'.format(barcode))
-                                        file.write('Circulation Class: {}.'.format(self.arg[0]))
-                                        file.write('Report Class: {}.'.format(self.arg[1]))
-                                        file.write('Call Number Prefix: {}.'.format(self.arg[2]))
-                                        file.write('Call Number: {}.'.format(self.arg[3]))
-                                        file.write('Physical Location: {}.'.format(self.arg[4]))
+                                        file.write('Circulation Class: {}.'.format(self.args[0]))
+                                        file.write('Report Class: {}.'.format(self.args[1]))
+                                        file.write('Call Number Prefix: {}.'.format(self.args[2]))
+                                        file.write('Call Number: {}.'.format(self.args[3]))
+                                        file.write('Physical Location: {}.'.format(self.args[4]))
                                         file.write('\n')
                                 time.sleep(2)
 
@@ -647,25 +666,25 @@ class Atriuum():
                 time.sleep(1)
                 for num in range(1, 11):
                     try:
-                        driver.find_element(By.ID, 'EditActiveHolding{num}'.format(str(num))).click()
+                        driver.find_element(By.ID, 'EditActiveHolding{}'.format(str(num))).click()
                         # Circulation Class.
-                        if self.arg[0] != None:
-                            Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.arg[0])
-                                
+                        if self.args[0] != None:
+                            Select(driver.find_element(By.ID, 'CircTypeCode')).select_by_visible_text(self.args[0])
+
                         # Report Class.
-                        if self.arg[1] != None:
-                            Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.arg[1])
-                                
+                        if self.args[1] != None:
+                            Select(driver.find_element(By.ID, 'ReportClassCode')).select_by_visible_text(self.args[1])
+
                         # Call Number Prefix.
-                        if self.arg[2] != None:
-                            if self.arg[2] == '0':
+                        if self.args[2] != None:
+                            if self.args[2] == '0':
                                 driver.find_element(By.ID, 'CallNumberPrefix').clear()
 
                         # Call Number.
-                        if self.arg[3] != None:
-                            if self.arg[3] == '0':
+                        if self.args[3] != None:
+                            if self.args[3] == '0':
                                 driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                            elif self.arg[3] == '1':
+                            elif self.args[3] == '1':
                                 try:
                                     author = driver.find_element_by_id('bibliographicAuthor').text
                                     print('[i] Original author name: {} '.format(author))
@@ -710,26 +729,30 @@ class Atriuum():
                                     print('[-] Cannot define author name!')
 
                             else:
-                                temp = arg[3]
-                                temp = temp.split(' ')
-                                driver.find_element(By.ID, 'CallNumberMiddle').clear()
-                                driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
-                                
+                                temp = args[3]
+                                for space in temp:
+                                    if space == '':
+                                        temp = temp.split(' ')
+                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                        driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp[0], Keys.ENTER, temp[1])
+                                    else:
+                                        driver.find_element(By.ID, 'CallNumberMiddle').clear()
+                                        driver.find_element(By.ID, 'CallNumberMiddle').send_keys(temp)
                         # Physical Location.
-                        if self.arg[4] != None:
-                            Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.arg[4])
-                                
+                        if self.args[4] != None:
+                            Select(driver.find_element(By.ID, 'SublocationCode')).select_by_visible_text(self.args[4])
+
                         # Save Changes.
                         driver.find_element(By.ID, 'bsiSave').click()
                         print('[i] Saved changes.')
                         if self.logs == 'y':
                             with open('logs.txt', 'a') as file:
                                 file.write('Barcode: {}.'.format(barcode))
-                                file.write('Circulation Class: {}.'.format(self.arg[0]))
-                                file.write('Report Class: {}.'.format(self.arg[1]))
-                                file.write('Call Number Prefix: {}.'.format(self.arg[2]))
-                                file.write('Call Number: {}.'.format(self.arg[3]))
-                                file.write('Physical Location: {}.'.format(self.arg[4]))
+                                file.write('Circulation Class: {}.'.format(self.args[0]))
+                                file.write('Report Class: {}.'.format(self.args[1]))
+                                file.write('Call Number Prefix: {}.'.format(self.args[2]))
+                                file.write('Call Number: {}.'.format(self.args[3]))
+                                file.write('Physical Location: {}.'.format(self.args[4]))
                                 file.write('\n')
                         time.sleep(2)
                     except:
@@ -766,7 +789,7 @@ while 1:
             website.edit_barcodes(edit,logs, circulation, report, call_prefix, call_number, physical_location, path=path)
         elif edit == '1':
             website.edit_barcodes(edit, logs, circulation, report, call_prefix, call_number, physical_location)
-        
+
         print('\n[+] Finished!')
         user = input('[+] Quit the program (y/n)? ')
         if user == 'y':
@@ -777,5 +800,3 @@ while 1:
             continue
 
 input()
-
-
