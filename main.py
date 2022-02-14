@@ -174,7 +174,7 @@ def report_class():
         elif user == '14':
             return 'eBooks'
         elif user == '15':
-            return Fiction
+            return 'Fiction'
         elif user == '16':
             return 'Journal/Newspaper'
         elif user == '17':
